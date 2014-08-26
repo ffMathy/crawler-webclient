@@ -11,19 +11,28 @@ public class CrawlerWebClient
 {
     private CookieContainer container;
 
+    private string lastUrl;
+
     public CrawlerWebClient()
     {
         container = new CookieContainer();
+
+        lastUrl = null;
     }
 
-    public async Task<string> GetAsync(string uri, string parameters = null, string referrer = null, string userAgent = null)
+    public async Task<string> GetAsync(string uri, string parameters = null, string referer = null, string userAgent = null)
     {
+        if (referer == null && lastUrl != null)
+        {
+            referer = lastUrl;
+        }
+
         var request = WebRequest.CreateHttp(uri + (parameters == null ? "" : "?" + parameters));
         request.CookieContainer = container;
         request.Method = "GET";
 
         var headers = request.Headers;
-        headers[HttpRequestHeader.Referer] = referrer;
+        headers[HttpRequestHeader.Referer] = referer;
         headers[HttpRequestHeader.UserAgent] = userAgent;
 
         var downloading = true;
@@ -49,6 +58,8 @@ public class CrawlerWebClient
         {
             await Task.Delay(100);
         }
+
+        lastUrl = uri;
 
         return result;
     }
