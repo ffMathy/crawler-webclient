@@ -27,13 +27,17 @@ public class CrawlerWebClient
             referer = lastUrl;
         }
 
+        if (userAgent == null)
+        {
+            userAgent = "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko";
+        }
+
         var request = WebRequest.CreateHttp(uri + (parameters == null ? "" : "?" + parameters));
         request.CookieContainer = container;
         request.Method = "GET";
 
-        var headers = request.Headers;
-        headers[HttpRequestHeader.Referer] = referer;
-        headers[HttpRequestHeader.UserAgent] = userAgent;
+        request.Referer = referer;
+        request.UserAgent = userAgent;
 
         var downloading = true;
         string result = null;
